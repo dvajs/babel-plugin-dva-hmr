@@ -1,9 +1,9 @@
 # babel-plugin-dva-hmr
 
-[![NPM version](https://img.shields.io/npm/v/babel-plugin-hmr-dva.svg?style=flat)](https://npmjs.org/package/babel-plugin-hmr-dva)
-[![Build Status](https://img.shields.io/travis/dvajs/babel-plugin-hmr-dva.svg?style=flat)](https://travis-ci.org/dvajs/babel-plugin-hmr-dva)
-[![Coverage Status](https://img.shields.io/coveralls/dvajs/babel-plugin-hmr-dva.svg?style=flat)](https://coveralls.io/r/dvajs/babel-plugin-hmr-dva)
-[![NPM downloads](http://img.shields.io/npm/dm/babel-plugin-hmr-dva.svg?style=flat)](https://npmjs.org/package/babel-plugin-hmr-dva)
+[![NPM version](https://img.shields.io/npm/v/babel-plugin-dva-hmr.svg?style=flat)](https://npmjs.org/package/babel-plugin-dva-hmr)
+[![Build Status](https://img.shields.io/travis/dvajs/babel-plugin-dva-hmr.svg?style=flat)](https://travis-ci.org/dvajs/babel-plugin-dva-hmr)
+[![Coverage Status](https://img.shields.io/coveralls/dvajs/babel-plugin-dva-hmr.svg?style=flat)](https://coveralls.io/r/dvajs/babel-plugin-dva-hmr)
+[![NPM downloads](http://img.shields.io/npm/dm/babel-plugin-dva-hmr.svg?style=flat)](https://npmjs.org/package/babel-plugin-dva-hmr)
 
 Hmr babel plugin for dva.
 
