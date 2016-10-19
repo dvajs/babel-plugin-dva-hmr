@@ -36,12 +36,32 @@ function getHmrString(appName, routerPath) {
 export default function ({ types:t }) {
   const cache = {};
 
-  function isMemberExpression(node, objectName, propertyName) {
+  function isDvaCallExpression(node) {
+    return t.isCallExpression(node) &&
+        t.isIdentifier(node.callee) &&
+        node.callee.name === 'dva';
+  }
+
+  function isDvaInstance(identifierName, scope) {
+    if (scope.hasBinding(identifierName)) {
+      const binding = scope.bindings[identifierName];
+      const parent = binding.path.parent;
+      if (t.isVariableDeclaration(parent)) {
+        const declarator = findDeclarator(parent.declarations, identifierName);
+        if (declarator && isDvaCallExpression(declarator.init)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function isRouterCall(node, scope) {
     if (!t.isMemberExpression(node)) return false;
     const { object, property } = node;
     return (
-      ( t.isIdentifier(object) && object.name === objectName) &&
-      ( t.isIdentifier(property) && property.name === propertyName )
+      ( t.isIdentifier(object) && isDvaInstance(object.name, scope)) &&
+      ( t.isIdentifier(property) && property.name === 'router' )
     );
   }
 
@@ -59,8 +79,7 @@ export default function ({ types:t }) {
     }
   }
 
-  function getRouterPath(node, path) {
-    const { filename } = path.hub.file.opts;
+  function getRouterPath(node, scope, filename) {
     switch (node.type) {
       case 'CallExpression':
         if (t.isLiteral(node.arguments[0])) {
@@ -68,7 +87,6 @@ export default function ({ types:t }) {
         }
         break;
       case 'Identifier':
-        const scope = path.scope;
         if (scope.hasBinding(node.name)) {
           const binding = scope.bindings[node.name];
           const parent = binding.path.parent;
@@ -77,7 +95,7 @@ export default function ({ types:t }) {
             return parent.source.value;
           } else if (t.isVariableDeclaration(parent)) {
             const declarator = findDeclarator(parent.declarations, node.name);
-            if (declarator && t.isVariableDeclarator(declarator) && isRequire(declarator.init)) {
+            if (declarator && isRequire(declarator.init)) {
               return declarator.init.arguments[0].value;
             }
           }
@@ -86,7 +104,7 @@ export default function ({ types:t }) {
       default:
         break;
     }
-    console.warn(`[babel-plugin-dva-hmr][WARN] can't get router path in ${filename}`);
+    !opts.quiet && console.warn(`[babel-plugin-dva-hmr][WARN] can't get router path in ${filename}`);
   }
 
   return {
@@ -95,12 +113,12 @@ export default function ({ types:t }) {
         const { filename } = path.hub.file.opts;
         if (cache[filename]) return;
         const { callee, arguments: args } = path.node;
-        if (isMemberExpression(callee, 'app', 'router')) {
-          const routerPath = getRouterPath(args[0], path);
+        if (isRouterCall(callee, path.scope)) {
+          const routerPath = getRouterPath(args[0], path.scope, filename);
           if (routerPath) {
             cache[filename] = true;
             !opts.quiet && console.info(`[babel-plugin-dva-hmr][INFO] got routerPath ${routerPath}`);
-            path.parentPath.replaceWithSourceString(getHmrString('app', routerPath));
+            path.parentPath.replaceWithSourceString(getHmrString(callee.object.name, routerPath));
           }
         }
       },
