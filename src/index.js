@@ -39,14 +39,16 @@ export default function ({ types:t }) {
   function getImportRequirePath(identifierName, scope) {
     if (scope.hasBinding(identifierName)) {
       const binding = scope.bindings[identifierName];
-      const parent = binding.path.parent;
+      if (binding) {
+        const parent = binding.path.parent;
 
-      if (t.isImportDeclaration(parent)) {
-        return parent.source.value;
-      } else if (t.isVariableDeclaration(parent)) {
-        const declarator = findDeclarator(parent.declarations, identifierName);
-        if (declarator && isRequire(declarator.init)) {
-          return declarator.init.arguments[0].value;
+        if (t.isImportDeclaration(parent)) {
+          return parent.source.value;
+        } else if (t.isVariableDeclaration(parent)) {
+          const declarator = findDeclarator(parent.declarations, identifierName);
+          if (declarator && isRequire(declarator.init)) {
+            return declarator.init.arguments[0].value;
+          }
         }
       }
     }
@@ -62,11 +64,13 @@ export default function ({ types:t }) {
   function isDvaInstance(identifierName, scope) {
     if (scope.hasBinding(identifierName)) {
       const binding = scope.bindings[identifierName];
-      const parent = binding.path.parent;
-      if (t.isVariableDeclaration(parent)) {
-        const declarator = findDeclarator(parent.declarations, identifierName);
-        if (declarator && isDvaCallExpression(declarator.init, scope)) {
-          return true;
+      if (binding) {
+        const parent = binding.path.parent;
+        if (t.isVariableDeclaration(parent)) {
+          const declarator = findDeclarator(parent.declarations, identifierName);
+          if (declarator && isDvaCallExpression(declarator.init, scope)) {
+            return true;
+          }
         }
       }
     }
@@ -77,8 +81,8 @@ export default function ({ types:t }) {
     if (!t.isMemberExpression(node)) return false;
     const { object, property } = node;
     return (
-      ( t.isIdentifier(object) && isDvaInstance(object.name, scope)) &&
-      ( t.isIdentifier(property) && property.name === 'router' )
+      ( t.isIdentifier(property) && property.name === 'router' ) &&
+      ( t.isIdentifier(object) && isDvaInstance(object.name, scope))
     );
   }
 
