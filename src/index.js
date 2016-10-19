@@ -35,11 +35,28 @@ function getHmrString(appName, routerPath, container = '#root') {
 
 export default function ({ types:t }) {
   const cache = {};
+  
+  function getImportRequirePath(identifierName, scope) {
+    if (scope.hasBinding(identifierName)) {
+      const binding = scope.bindings[identifierName];
+      const parent = binding.path.parent;
 
-  function isDvaCallExpression(node) {
+      if (t.isImportDeclaration(parent)) {
+        return parent.source.value;
+      } else if (t.isVariableDeclaration(parent)) {
+        const declarator = findDeclarator(parent.declarations, identifierName);
+        if (declarator && isRequire(declarator.init)) {
+          return declarator.init.arguments[0].value;
+        }
+      }
+    }
+    return null;
+  }
+
+  function isDvaCallExpression(node, scope) {
     return t.isCallExpression(node) &&
         t.isIdentifier(node.callee) &&
-        node.callee.name === 'dva';
+        getImportRequirePath(node.callee.name, scope) === 'dva';
   }
 
   function isDvaInstance(identifierName, scope) {
@@ -48,7 +65,7 @@ export default function ({ types:t }) {
       const parent = binding.path.parent;
       if (t.isVariableDeclaration(parent)) {
         const declarator = findDeclarator(parent.declarations, identifierName);
-        if (declarator && isDvaCallExpression(declarator.init)) {
+        if (declarator && isDvaCallExpression(declarator.init, scope)) {
           return true;
         }
       }
@@ -87,18 +104,9 @@ export default function ({ types:t }) {
         }
         break;
       case 'Identifier':
-        if (scope.hasBinding(node.name)) {
-          const binding = scope.bindings[node.name];
-          const parent = binding.path.parent;
-
-          if (t.isImportDeclaration(parent)) {
-            return parent.source.value;
-          } else if (t.isVariableDeclaration(parent)) {
-            const declarator = findDeclarator(parent.declarations, node.name);
-            if (declarator && isRequire(declarator.init)) {
-              return declarator.init.arguments[0].value;
-            }
-          }
+        const path = getImportRequirePath(node.name, scope);
+        if (path) {
+          return path;
         }
         break;
       default:
