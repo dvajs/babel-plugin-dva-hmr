@@ -18,6 +18,9 @@ describe('index.js', () => {
         };
         const actualFile = join(fixtures, f, 'actual.js');
         const actual = transformFileSync(actualFile, opts).code;
+        if (isOnly) {
+          console.log(actual);
+        }
         const expected = readFileSync(join(fixtures, f, 'expected.js'), 'utf-8');
         expect(actual).toEqual(expected);
       });

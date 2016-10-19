@@ -34,7 +34,7 @@ function getHmrString(appName, routerPath) {
 }
 
 export default function ({ types:t }) {
-  let isAdded = false;
+  const cache = {};
 
   function isMemberExpression(node, objectName, propertyName) {
     if (!t.isMemberExpression(node)) return false;
@@ -45,11 +45,21 @@ export default function ({ types:t }) {
     );
   }
 
-  function getRouterPath(node) {
+  function getRouterPath(node, path) {
     switch (node.type) {
       case 'CallExpression':
         if (t.isLiteral(node.arguments[0])) {
           return node.arguments[0].value;
+        }
+        break;
+      case 'Identifier':
+        const scope = path.scope;
+        if (scope.hasBinding(node.name)) {
+          const binding = scope.bindings[node.name];
+          const parent = binding.path.parent;
+          if (t.isImportDeclaration(parent)) {
+            return parent.source.value;
+          }
         }
         break;
       default:
@@ -62,12 +72,13 @@ export default function ({ types:t }) {
     visitor: {
       Program: {},
       CallExpression(path, { opts }) {
-        if (isAdded) return;
+        const { filename } = path.hub.file.opts;
+        if (cache[filename]) return;
         const { callee, arguments: args } = path.node;
         if (isMemberExpression(callee, 'app', 'router')) {
-          const routerPath = getRouterPath(args[0]);
+          const routerPath = getRouterPath(args[0], path);
           if (routerPath) {
-            isAdded = true;
+            cache[filename] = true;
             !opts.quiet && console.info(`[babel-plugin-dva-hmr][INFO] got routerPath ${routerPath}`);
             path.parentPath.replaceWithSourceString(getHmrString('app', routerPath));
           }
