@@ -8,7 +8,7 @@
     "test": "NODE_ENV=test nyc mocha --no-timeouts",
     "debug": "mocha --require babel-register --no-timeouts",
     "lint": "eslint --ext .js src",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
     "include": [
@@ -39,7 +39,7 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.3.13",
     "babel-register": "^6.16.3",
-    "coveralls": "^2.11.6",
+    "coveralls": "^2.11.14",
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^6.2.0",
     "expect": "^1.20.2",
