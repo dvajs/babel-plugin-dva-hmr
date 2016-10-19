@@ -23,9 +23,8 @@ $ npm install babel-plugin-dva-hmr redbox-react@1.x --save-dev
 {
   "plugins": [
     ["dva-hmr", {
-      "entries": [
-        "./src/index.js"
-      ]
+      "container": "#root",
+      "quiet": false
     }]
   ]
 }
@@ -36,9 +35,8 @@ webpack.config.js for atool-build, [example](https://github.com/dvajs/dva/blob/m
 ```javascript
 if (env === 'development') {
   webpackConfig.babel.plugins.push(['dva-hmr', {
-    entries: [
-      './src/index.js',
-    ],
+    container: '#root',
+    quiet: false,
   }]);
 }
 ```
