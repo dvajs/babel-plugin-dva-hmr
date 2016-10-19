@@ -23,7 +23,7 @@ app.model(require('./models/user'));
 
             ReactDOM.render(React.createElement(RedBox, {
               error: error
-            }), document.getElementById('root'));
+            }), document.querySelector('#root'));
           };
 
           var newRender = function newRender(router) {
