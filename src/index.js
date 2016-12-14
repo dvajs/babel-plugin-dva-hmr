@@ -100,7 +100,7 @@ export default function ({ types:t }) {
     }
   }
 
-  function getRouterPath(node, scope, filename) {
+  function getRouterPath(node, scope, filename, opts) {
     switch (node.type) {
       case 'CallExpression':
         if (t.isLiteral(node.arguments[0])) {
@@ -126,7 +126,7 @@ export default function ({ types:t }) {
         if (cache[filename]) return;
         const { callee, arguments: args } = path.node;
         if (isRouterCall(callee, path.scope)) {
-          const routerPath = getRouterPath(args[0], path.scope, filename);
+          const routerPath = getRouterPath(args[0], path.scope, filename, opts);
           if (routerPath) {
             cache[filename] = true;
             !opts.quiet && console.info(`[babel-plugin-dva-hmr][INFO] got routerPath ${routerPath}`);
