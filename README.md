@@ -5,7 +5,7 @@
 [![Coverage Status](https://img.shields.io/coveralls/dvajs/babel-plugin-dva-hmr.svg?style=flat)](https://coveralls.io/r/dvajs/babel-plugin-dva-hmr)
 [![NPM downloads](http://img.shields.io/npm/dm/babel-plugin-dva-hmr.svg?style=flat)](https://npmjs.org/package/babel-plugin-dva-hmr)
 
-Hmr babel plugin for dva.
+HMR babel plugin for dva.
 
 ---
 
@@ -21,25 +21,26 @@ $ npm install babel-plugin-dva-hmr redbox-react@1.x --save-dev
 
 ```javascript
 {
-  "plugins": [
-    ["dva-hmr", {
-      "container": "#root",
-      "quiet": false
-    }]
-  ]
+  "plugins": ["dva-hmr"]
 }
 ```
 
-webpack.config.js for atool-build, [example](https://github.com/dvajs/dva/blob/master/examples/user-dashboard/webpack.config.js)
+Configure it in .roadhogrc(configure file for [roadhog](https://github.com/sorrycc/roadhog)) only in development mode, [example](https://github.com/dvajs/dva-example-user-dashboard/blob/d6da33b/.roadhogrc#L24-L30)
 
 ```javascript
-if (env === 'development') {
-  webpackConfig.babel.plugins.push(['dva-hmr', {
-    container: '#root',
-    quiet: false,
-  }]);
+"env": {
+  "development": {
+    "extraBabelPlugins": [
+      "dva-hmr"
+    ]
+  }
 }
 ```
+
+## Options
+* `container` —— Specify the root element for `app.start()`.
+* `quiet` —— Don't output any log.
+* `disableModel` —— Disable model HMR.
 
 ## License
 
