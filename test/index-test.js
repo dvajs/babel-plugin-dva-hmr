@@ -14,7 +14,7 @@ describe('index.js', () => {
       itFn(`should work with ${f.split('-').join(' ')}`, () => {
         const opts = {
           presets: [],
-          plugins: [plugin]
+          plugins: [[plugin, { disableModel: f !== 'models' }]],
         };
         const actualFile = join(fixtures, f, 'actual.js');
         const actual = transformFileSync(actualFile, opts).code;
