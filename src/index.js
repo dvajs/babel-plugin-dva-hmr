@@ -146,7 +146,6 @@ export default function ({ types:t }) {
       Program: {
         enter(path) {
           const { filename } = path.hub.file.opts;
-          console.log('DELETE===============', filename);
           delete cache[filename];
         },
       },
