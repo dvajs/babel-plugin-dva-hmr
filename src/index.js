@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-function getHmrString(appName, routerPath, modelPaths, container = '#root', enableModel = false) {
+function getHmrString(appName, routerPath, modelPaths = [], container = '#root', enableModel = false) {
   const modelHot = enableModel ? modelPaths.map(modelPath => `
   if (module.hot) {
     const modelNamespaceMap = {};
