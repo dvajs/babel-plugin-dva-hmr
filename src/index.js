@@ -143,6 +143,13 @@ export default function ({ types:t }) {
 
   return {
     visitor: {
+      Program: {
+        enter(path) {
+          const { filename } = path.hub.file.opts;
+          console.log('DELETE===============', filename);
+          delete cache[filename];
+        },
+      },
       CallExpression(path, { opts }) {
         const { filename } = path.hub.file.opts;
         if (cache[filename]) return;
