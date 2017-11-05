@@ -10,6 +10,8 @@ function getHmrString(appName, routerPath, modelPaths = [], container = '#root',
     module.hot.accept('${modelPath}', () => {
       try {
         app.unmodel(modelNamespaceMap['${modelPath}']);
+        let model = require('${modelPath}');
+        if (model.default) model = model.default;
         app.model(model);
       } catch(e) { console.error(e); }
     });

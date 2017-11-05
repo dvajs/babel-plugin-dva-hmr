@@ -21,7 +21,10 @@ var app = (0, _dva2.default)();
 
 (function () {
   console.log('[HMR] inited with babel-plugin-dva-hmr');
-  app.router(require('./router'));
+
+  var router = require('./router');
+
+  app.router(router.default || router);
   app.use({
     onHmr: function onHmr(render) {
       if (module.hot) {
@@ -48,7 +51,7 @@ var app = (0, _dva2.default)();
           module.hot.accept('./router', function () {
             var router = require('./router');
 
-            newRender(router);
+            newRender(router.default || router);
           });
         })();
       }
