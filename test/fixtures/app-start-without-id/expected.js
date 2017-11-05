@@ -28,32 +28,30 @@ var app = (0, _dva2.default)();
   app.use({
     onHmr: function onHmr(render) {
       if (module.hot) {
-        (function () {
-          var renderNormally = render;
+        var renderNormally = render;
 
-          var renderException = function renderException(error) {
-            var RedBox = require('redbox-react');
+        var renderException = function renderException(error) {
+          var RedBox = require('redbox-react');
 
-            _reactDom2.default.render(React.createElement(RedBox, {
-              error: error
-            }), document.querySelector('#root'));
-          };
+          _reactDom2.default.render(React.createElement(RedBox, {
+            error: error
+          }), document.querySelector('#root'));
+        };
 
-          var newRender = function newRender(router) {
-            try {
-              renderNormally(router);
-            } catch (error) {
-              console.error('error', error);
-              renderException(error);
-            }
-          };
+        var newRender = function newRender(router) {
+          try {
+            renderNormally(router);
+          } catch (error) {
+            console.error('error', error);
+            renderException(error);
+          }
+        };
 
-          module.hot.accept('./router', function () {
-            var router = require('./router');
+        module.hot.accept('./router', function () {
+          var router = require('./router');
 
-            newRender(router.default || router);
-          });
-        })();
+          newRender(router.default || router);
+        });
       }
     }
   });
