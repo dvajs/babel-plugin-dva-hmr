@@ -44,7 +44,7 @@ function getHmrString(appName, routerPath, modelPaths = [], container = '#root',
           newRender(router.default || router);
         });
       }
-    },  
+    },
   });
   ${modelHot}
 })()
@@ -54,7 +54,7 @@ function getHmrString(appName, routerPath, modelPaths = [], container = '#root',
 export default function ({ types:t }) {
   const cache = {};
   const modelPaths = {};
-  
+
   function getImportRequirePath(identifierName, scope) {
     if (scope.hasBinding(identifierName)) {
       const binding = scope.bindings[identifierName];
@@ -65,8 +65,12 @@ export default function ({ types:t }) {
           return parent.source.value;
         } else if (t.isVariableDeclaration(parent)) {
           const declarator = findDeclarator(parent.declarations, identifierName);
-          if (declarator && isRequire(declarator.init)) {
-            return declarator.init.arguments[0].value;
+          if (declarator) {
+            if (isRequire(declarator.init)) {
+              return getArguments0(declarator.init);
+            } else if (isRequireDefault(declarator.init)) {
+              return getArguments0(declarator.init.object);
+            }
           }
         }
       }
@@ -120,6 +124,14 @@ export default function ({ types:t }) {
         node.callee.name === 'require';
   }
 
+  function isRequireDefault(node) {
+    if (!t.isMemberExpression(node)) return false;
+    const { object, property } = node;
+    return isRequire(object) &&
+        t.isIdentifier(property) &&
+        property.name === 'default';
+  }
+
   function findDeclarator(declarations, identifier) {
     for (let d of declarations) {
       if (t.isIdentifier(d.id) && d.id.name === identifier) {
@@ -128,19 +140,37 @@ export default function ({ types:t }) {
     }
   }
 
+  function getArguments0(node) {
+    if (t.isLiteral(node.arguments[0])) {
+      return node.arguments[0].value;
+    }
+  }
+
   function getRequirePath(node, scope) {
     switch (node.type) {
-      case 'CallExpression':
-        if (t.isLiteral(node.arguments[0])) {
-          return node.arguments[0].value;
+      case 'CallExpression': {
+        const path = getArguments0(node);
+        if (path) {
+          return path;
         }
         break;
-      case 'Identifier':
+      }
+      case 'Identifier': {
         const path = getImportRequirePath(node.name, scope);
         if (path) {
           return path;
         }
         break;
+      }
+      case 'MemberExpression': {
+        if (isRequireDefault(node)) {
+          const path = getArguments0(node.object);
+          if (path) {
+            return path;
+          }
+        }
+        break;
+      }
       default:
         break;
     }
