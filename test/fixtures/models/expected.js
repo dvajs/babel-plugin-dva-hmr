@@ -9,7 +9,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = require('./router');
 
 var app = (0, _dva2.default)();
-app.model(require('./models/a'));
+app.model(require('./models/a').default);
 app.model(require('./models/b'));
 
 (function () {
