@@ -184,8 +184,9 @@ export default function ({ types:t }) {
           delete cache[filename];
         },
       },
-      CallExpression(path, { opts }) {
-        const { filename } = path.hub.file.opts;
+      CallExpression(path, options) {
+        const { opts } = options;
+        const { filename } = path.hub ? path.hub.file.opts : options;
         if (cache[filename]) return;
         const { callee, arguments: args } = path.node;
         if (isRouterCall(callee, path.scope)) {
