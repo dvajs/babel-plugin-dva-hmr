@@ -8,6 +8,7 @@
     "test": "NODE_ENV=test nyc mocha --no-timeouts",
     "debug": "mocha --require babel-register --no-timeouts",
     "lint": "eslint --ext .js src",
+    "prepublishOnly": "npm run build && np --no-cleanup --yolo --no-publish",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "nyc": {
@@ -44,6 +45,7 @@
     "eslint-config-airbnb": "^6.2.0",
     "expect": "^1.20.2",
     "mocha": "^2.5.3",
+    "np": "^5.0.2",
     "nyc": "^8.3.1",
     "pre-commit": "~1.1.2"
   },
