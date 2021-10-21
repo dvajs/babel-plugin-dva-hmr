@@ -3,6 +3,10 @@
   "version": "0.4.2",
   "description": "Hmr plugin for dva.",
   "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dvajs/babel-plugin-dva-hmr.git"
+  },
   "scripts": {
     "build": "rm -rf lib && ./node_modules/.bin/babel src --out-dir lib --ignore __tests__",
     "test": "NODE_ENV=test nyc mocha --no-timeouts",
